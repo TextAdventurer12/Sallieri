@@ -19,3 +19,8 @@ sal_thread *sal_new_thread_file(FILE *f)
     strcpy(thread->API_KEY, buf);
     return thread;
 }
+
+char *sal_get_text_response(sal_thread *thr, char *prompt)
+{
+
+}
