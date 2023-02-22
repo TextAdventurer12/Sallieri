@@ -6,6 +6,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define KEY_LENGTH 256
+#define REQUEST_LENGTH 1024
+#define REPLY_LENGTH 2048
+#define MAX_TOKENS 512
+
 typedef struct gpt_instance 
 {
     char *API_KEY;
