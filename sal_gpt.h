@@ -14,11 +14,17 @@
 typedef struct gpt_instance 
 {
     char *API_KEY;
-} 
+}
 sal_thread;
+struct sal_list
+{
+    char *mem;
+    size_t len;
+};
 
 sal_thread *sal_new_thread(FILE *f);
 char *sal_get_text_response(sal_thread *thr, char *prompt); // gets the response from gpt from a string prompt
 char *sal_generate_request(sal_thread *thr, char *prompt);
+size_t sal_write_function(void *contents, size_t size, size_t nmemb, void *userp);
 
 #endif

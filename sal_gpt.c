@@ -30,9 +30,27 @@ char *sal_get_text_response(sal_thread *thr, char *prompt)
     
 }
 
+//  -H \"Content-Type: application/json\" -H \"Authorization: Bearer %s\" -d '{\"model\": \"text-davinci-003\", \"prompt\": \"%s\", \"temperature\": 0, \"max_tokens\": %d}'", thr->API_KEY, prompt, MAX_TOKENS
 char *sal_generate_request(sal_thread *thr, char *prompt)
 {
     char *request = malloc(REQUEST_LENGTH);
-    sprintf(request, "curl https://api.openai.com/v1/completions -H \"Content-Type: application/json\" -H \"Authorization: Bearer %s\" -d '{\"model\": \"text-davinci-003\", \"prompt\": \"%s\", \"temperature\": 0, \"max_tokens\": %d}'", thr->API_KEY, prompt, MAX_TOKENS);
+    sprintf(request, "curl https://api.openai.com/v1/completions");
     return request;
+}
+
+size_t sal_write_function (void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t real_size = size * nmemb;
+    struct sal_list *mem = (struct sal_list *)userp;
+    {
+        char *ptr = realloc(mem->mem, mem->len + real_size + 1);
+        if (!ptr)
+            return 0;
+        mem->mem = ptr;
+    }
+    memcpy(&(mem->mem[mem->len]), contents, real_size);
+    mem->len += real_size;
+    mem->mem[mem->len] = 0;
+
+    return real_size;
 }
