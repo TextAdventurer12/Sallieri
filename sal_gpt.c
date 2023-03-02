@@ -22,19 +22,31 @@ sal_thread *sal_new_thread(FILE *f)
     fscanf(f, "%s", buf);
     sal_thread *thread = malloc(sizeof(sal_thread));
     strcpy(thread->API_KEY, buf);
+    thread->curl = curl_easy_init();
+    thread->data = sal_init_list();
+    if (!thread->curl)
+        return NULL;
+    curl_easy_setopt(thread->curl, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(thread->curl, CURLOPT_WRITEFUNCTION, sal_write_function);
+    curl_easy_setopt(thread->curl, CURLOPT_WRITEDATA, (void *)&thread->data);
+    curl_easy_setopt(thread->curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
     return thread;
 }
 
-char *sal_get_text_response(sal_thread *thr, char *prompt)
+int sal_get_text_response(sal_thread *thr, char *prompt)
 {
-    
+    curl_easy_setopt(thr->curl, CURLOPT_URL, sal_generate_request(thr, prompt));
+    thr->res = curl_easy_perform(thr->curl);
+    if (thr->res != CURLE_OK)
+        return 1;
+    return 0;
 }
 
-//  -H \"Content-Type: application/json\" -H \"Authorization: Bearer %s\" -d '{\"model\": \"text-davinci-003\", \"prompt\": \"%s\", \"temperature\": 0, \"max_tokens\": %d}'", thr->API_KEY, prompt, MAX_TOKENS
+//   -H \"Content-Type: application/json\" -H \"Authorization: Bearer %s\" -d '{\"model\": \"text-davinci-003\", \"prompt\": \"%s\", \"temperature\": 0, \"max_tokens\": %d}'", thr->API_KEY, prompt, MAX_TOKENS
 char *sal_generate_request(sal_thread *thr, char *prompt)
 {
     char *request = malloc(REQUEST_LENGTH);
-    sprintf(request, "curl https://api.openai.com/v1/completions");
+    sprintf(request, "https://api.openai.com/v1/completions");
     return request;
 }
 
@@ -53,4 +65,9 @@ size_t sal_write_function (void *contents, size_t size, size_t nmemb, void *user
     mem->mem[mem->len] = 0;
 
     return real_size;
+}
+
+struct sal_list sal_init_list()
+{
+    return (struct sal_list) {malloc(0), 0};
 }
