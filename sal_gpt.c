@@ -5,12 +5,20 @@ sal_thread *sal_new_thread_input()
 {
     printf("Enter API Key:\n");
     char buf[KEY_LENGTH];
-    char format[16];
+    char format[24];
     sprintf(format, "%%%ds", KEY_LENGTH-1);
     scanf(format, buf);
     sal_thread *thread = malloc(sizeof(sal_thread));
     thread->API_KEY = malloc(KEY_LENGTH);
     strcpy(thread->API_KEY, buf);
+    thread->curl = curl_easy_init();
+    thread->data = sal_init_list();
+    if (!thread->curl)
+        return NULL;
+    curl_easy_setopt(thread->curl, CURLOPT_FOLLOWLOCATION, 1);
+    curl_easy_setopt(thread->curl, CURLOPT_WRITEFUNCTION, sal_write_function);
+    curl_easy_setopt(thread->curl, CURLOPT_WRITEDATA, (void *)&thread->data);
+    curl_easy_setopt(thread->curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
     return thread;
 }
 
