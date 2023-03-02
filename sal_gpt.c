@@ -1,7 +1,7 @@
 #include "sal_gpt.h"
 #include <stdio.h>
 
-sal_thread *sal_new_thread_input()
+sal_thread *sal_get_thread_input()
 {
     printf("Enter API Key:\n");
     char buf[KEY_LENGTH];
@@ -11,25 +11,23 @@ sal_thread *sal_new_thread_input()
     sal_thread *thread = malloc(sizeof(sal_thread));
     thread->API_KEY = malloc(KEY_LENGTH);
     strcpy(thread->API_KEY, buf);
-    thread->curl = curl_easy_init();
-    thread->data = sal_init_list();
-    if (!thread->curl)
-        return NULL;
-    curl_easy_setopt(thread->curl, CURLOPT_FOLLOWLOCATION, 1);
-    curl_easy_setopt(thread->curl, CURLOPT_WRITEFUNCTION, sal_write_function);
-    curl_easy_setopt(thread->curl, CURLOPT_WRITEDATA, (void *)&thread->data);
-    curl_easy_setopt(thread->curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-    return thread;
+    return sa
 }
 
-sal_thread *sal_new_thread(FILE *f)
+sal_thread *sal_get_thread_file ()
 {
-    if (!f)
-        return sal_new_thread_input();
     char buf[256];
     fscanf(f, "%s", buf);
     sal_thread *thread = malloc(sizeof(sal_thread));
     strcpy(thread->API_KEY, buf);
+    return sal_thread;
+}
+
+sal_thread *sal_new_thread(FILE *f)
+{
+    sal_thread *thread = f ? sal_get_thread_file(f) : sal_get_thread_input();
+    if (!f)
+        return sal_new_thread_input();
     thread->curl = curl_easy_init();
     thread->data = sal_init_list();
     if (!thread->curl)

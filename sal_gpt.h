@@ -25,6 +25,8 @@ typedef struct gpt_instance
 }
 sal_thread;
 
+sal_thread *sal_get_thread_input();
+sal_thread *sal_get_thread_file ();
 sal_thread *sal_new_thread(FILE *f);
 int sal_get_text_response(sal_thread *thr, char *prompt); // gets the response from gpt from a string prompt
 char *sal_generate_request(sal_thread *thr, char *prompt);
